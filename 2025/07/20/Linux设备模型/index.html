@@ -1,0 +1,921 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/fluid.png">
+  <link rel="icon" href="/img/fluid.png">
+  
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="Hichens">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="Overview即插即用（Plug and Play）是一种技术，它支持自动添加和移除设备到系统中。它通过在系统启动时自动配置设备，来减少与这些设备使用的资源相关的冲突。为了实现这些目标，需要具备以下特性：   自动检测系统中添加和移除的设备（设备及其总线必须通知相应的驱动程序发生了配置更改）。 资源管理（地址、中断线、DMA 通道、内存区域），包括为设备分配资源并解决可能出现的冲突。 设备必须允">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Hichens Blog">
+<meta property="og:url" content="https://hehichens.github.io/2025/07/20/Linux%E8%AE%BE%E5%A4%87%E6%A8%A1%E5%9E%8B/index.html">
+<meta property="og:site_name" content="Hichens Blog">
+<meta property="og:description" content="Overview即插即用（Plug and Play）是一种技术，它支持自动添加和移除设备到系统中。它通过在系统启动时自动配置设备，来减少与这些设备使用的资源相关的冲突。为了实现这些目标，需要具备以下特性：   自动检测系统中添加和移除的设备（设备及其总线必须通知相应的驱动程序发生了配置更改）。 资源管理（地址、中断线、DMA 通道、内存区域），包括为设备分配资源并解决可能出现的冲突。 设备必须允">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2025-07-20T03:03:41.472Z">
+<meta property="article:modified_time" content="2025-07-20T03:02:50.468Z">
+<meta property="article:author" content="Hichens">
+<meta name="twitter:card" content="summary_large_image">
+  
+  
+  
+  <title>Hichens Blog</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/c/font_1749284_5i9bdhy70f8.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/c/font_1736178_k526ubmyhba.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"hehichens.github.io","root":"/","version":"1.9.8","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false},"umami":{"src":null,"website_id":null,"domains":null,"start_time":"2024-01-01T00:00:00.000Z","token":null,"api_server":null}},"search_path":"/local-search.xml","include_content_in_search":true};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+
+  
+<meta name="generator" content="Hexo 7.3.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 70vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>Fluid</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/" target="_self">
+                <i class="iconfont icon-home-fill"></i>
+                <span>首页</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/" target="_self">
+                <i class="iconfont icon-archive-fill"></i>
+                <span>归档</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/" target="_self">
+                <i class="iconfont icon-category-fill"></i>
+                <span>分类</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/" target="_self">
+                <i class="iconfont icon-tags-fill"></i>
+                <span>标签</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/" target="_self">
+                <i class="iconfont icon-user-fill"></i>
+                <span>关于</span>
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              <i class="iconfont icon-search"></i>
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">
+              <i class="iconfont icon-dark" id="color-toggle-icon"></i>
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/default.png') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text=""></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2025-07-20 11:03" pubdate>
+          2025年7月20日 上午
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          6.7k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          56 分钟
+        
+      </span>
+    
+
+    
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <h1 id="seo-header"></h1>
+            
+            
+              <div class="markdown-body">
+                
+                <h2 id="Overview"><a href="#Overview" class="headerlink" title="Overview"></a>Overview</h2><p>即插即用（Plug and Play）是一种技术，它支持自动添加和移除设备到系统中。它通过在系统启动时自动配置设备，来减少与这些设备使用的资源相关的冲突。为了实现这些目标，需要具备以下特性：</p>
+<blockquote>
+<ul>
+<li>自动检测系统中添加和移除的设备（设备及其总线必须通知相应的驱动程序发生了配置更改）。</li>
+<li>资源管理（地址、中断线、DMA 通道、内存区域），包括为设备分配资源并解决可能出现的冲突。</li>
+<li>设备必须允许进行软件配置（设备资源（端口、中断以及 DMA 资源）必须允许驱动程序进行分配）。</li>
+<li>操作系统在需要时必须自动加载新设备所需的驱动程序。</li>
+<li>如果设备及其总线允许的话，系统应能够在运行时添加或移除设备，而无需重新启动系统（热插拔）。</li>
+</ul>
+</blockquote>
+<p>要支持即插即用，BIOS、操作系统和设备都必须支持这项技术。设备必须具有提供给驱动程序进行识别的 ID，并且操作系统必须能够在配置更改出现时进行识别。</p>
+<p>即插即用设备包括：PCI 设备（网卡）、USB（键盘、鼠标、打印机）等。</p>
+<p>在 2.6 版本之前，内核没有统一的模型用来获取有关设备的信息。因此，Linux 开发团队开发了 Linux 设备模型，用于 Linux 设备。</p>
+<p>该模型的主要目的是维护反映系统状态和结构的内部数据结构。这些信息包括系统中有哪些设备、它们在电源管理方面的状态如何，连接到哪个总线，有哪些驱动程序，以及系统中总线、设备、驱动程序的结构。</p>
+<p>为了维护这些信息，内核使用以下对象：</p>
+<blockquote>
+<ul>
+<li>设备（device）：<strong>抽象系统中所有的硬件设备</strong>，描述它的名字、属性、从属的Bus、从属的Class等信息。</li>
+<li>驱动程序（driver）：Linux设备模型用Driver<strong>抽象硬件设备的驱动程序</strong>，它包含设备初始化、电源管理相关的接口实现。而Linux内核中的驱动开发，基本都围绕该抽象进行（实现所规定的接口函数）。</li>
+<li>总线（bus）：Linux认为（可以参考include&#x2F;linux&#x2F;device.h中struct bus_type的注释），总线是CPU和一个或多个设备之间信息交互的通道。而为了方便设备模型的抽象，<strong>所有的设备都应连接到总线上</strong>（无论是CPU内部总线、虚拟的总线还是“platform Bus”）。</li>
+<li>类别（class）：具有类似行为的设备类型；存在用于磁盘、分区、串口等的类别。</li>
+<li>子系统（subsystem）：对系统结构的视图；内核子系统包括设备（对系统中所有设备的分层视图）、总线（根据设备连接到总线的方式的总线视图）、类别等。</li>
+</ul>
+</blockquote>
+<p>Linux设备模型的核心思想是（通过xxx手段，实现xxx目的）：</p>
+<ol>
+<li><p>用Device（struct device）和Device Driver（struct device_driver）两个数据结构，<strong>分别从“有什么用”和“怎么用”两个角度描述硬件设备</strong>。这样就统一了编写设备驱动的格式，使驱动开发从论述题变为填空体，从而简化了设备驱动的开发。</p>
+</li>
+<li><p>同样使用Device和Device Driver两个数据结构，<strong>实现硬件设备的即插即用（热拔插）</strong>。在Linux内核中，只要任何Device和Device Driver具有相同的名字，内核就会执行Device Driver结构中的初始化函数（probe），该函数会初始化设备，使其为可用状态。而对大多数热拔插设备而言，它们的Device Driver一直存在内核中。当设备没有插入时，其Device结构不存在，因而其Driver也就不执行初始化操作。当设备插入时，内核会创建一个Device结构（名称和Driver相同），此时就会触发Driver的执行。这就是即插即用的概念。</p>
+</li>
+<li><p><strong>通过”Bus–&gt;Device”类型的树状结构解决设备之间的依赖</strong>，而这种依赖在开关机、电源管理等过程中尤为重要。试想，一个设备挂载在一条总线上，要启动这个设备，必须先启动它所挂载的总线。很显然，如果系统中设备非常多、依赖关系非常复杂的时候，无论是内核还是驱动的开发人员，都无力维护这种关系。而设备模型中的这种树状结构，可以自动处理这种依赖关系。启动某一个设备前，内核会检查该设备是否依赖其它设备或者总线，如果依赖，则检查所依赖的对象是否已经启动，如果没有，则会先启动它们，直到启动该设备的条件具备为止。而驱动开发人员需要做的，就是在编写设备驱动时，告知内核该设备的依赖关系即可。</p>
+</li>
+<li><p><strong>使用Class结构，在设备模型中引入面向对象的概念</strong>，这样可以最大限度地抽象共性，减少驱动开发过程中的重复劳动，降低工作量。</p>
+</li>
+</ol>
+<h2 id="kobject"><a href="#kobject" class="headerlink" title="kobject"></a>kobject</h2><h3 id="kobject-kset-ktype"><a href="#kobject-kset-ktype" class="headerlink" title="kobject&#x2F;kset&#x2F;ktype"></a>kobject&#x2F;kset&#x2F;ktype</h3><p>kobject是Linux内核中一个基础数据结构，它提供了<strong>内核对象的基本管理功能</strong>，是sysfs虚拟文件系统的基础，也是设备模型的核心组成部分。每个kobject都会在”&#x2F;sys&#x2F;“文件系统中以目录的形式出现，每个kobject对应sysfs中的一个目录。</p>
+<p>ktype代表kobject的属性操作集合（由于通用性，多个kobject可能共用同一个属性操作集，因此把Ktype独立出来了）。</p>
+<p>kset是一个特殊的kobject，它用来集合相似的kobject。</p>
+<p>kobject（内核对象）是Linux内核中用于实现以下功能的基础结构：</p>
+<ol>
+<li><strong>引用计数</strong>：跟踪对象生命周期</li>
+<li><strong>sysfs表示</strong>：在&#x2F;sys目录下创建对应的条目</li>
+<li><strong>数据结构关联</strong>：将内核数据结构组织成层次结构</li>
+<li><strong>热插拔事件处理</strong>：支持设备的热插拔通知</li>
+</ol>
+<p>kobject原型</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">kobject</span> &#123;</span><br>    <span class="hljs-type">const</span> <span class="hljs-type">char</span>      *name;          <span class="hljs-comment">// 对象名称（在sysfs中显示）</span><br>    <span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">list_head</span> <span class="hljs-title">entry</span>;</span>         <span class="hljs-comment">// 用于将Kobject加入到Kset中的list_head</span><br>    <span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">kobject</span>  *<span class="hljs-title">parent</span>;</span>        <span class="hljs-comment">// 该kobject属于的Kset。可以为NULL。如果存在，且没有指定parent，则会把Kset作为parent</span><br>    <span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">kset</span>     *<span class="hljs-title">kset</span>;</span>          <span class="hljs-comment">// 所属的kset</span><br>    <span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">kobj_type</span> *<span class="hljs-title">ktype</span>;</span>        <span class="hljs-comment">// 对象类型描述符</span><br>    <span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">sysfs_dirent</span> *<span class="hljs-title">sd</span>;</span>        <span class="hljs-comment">// sysfs目录项指针，即该Kobject在sysfs中的表示</span><br>    <span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">kref</span>     <span class="hljs-title">kref</span>;</span>           <span class="hljs-comment">// 引用计数</span><br>    <span class="hljs-type">unsigned</span> <span class="hljs-type">int</span> state_initialized:<span class="hljs-number">1</span>; <span class="hljs-comment">// 初始化状态标志</span><br>    <span class="hljs-comment">// ...</span><br>&#125;;<br></code></pre></td></tr></table></figure>
+
+
+
+<p>kset原型</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">kset</span> &#123;</span><br>    <span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">list_head</span> <span class="hljs-title">list</span>;</span>       <span class="hljs-comment">// 包含的kobject链表，连接该kset下所有的kobject</span><br>    <span class="hljs-type">spinlock_t</span> list_lock;        <span class="hljs-comment">// 保护链表的锁</span><br>    <span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">kobject</span> <span class="hljs-title">kobj</span>;</span>        <span class="hljs-comment">// 内嵌的kobject</span><br>    <span class="hljs-type">const</span> <span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">kset_uevent_ops</span> *<span class="hljs-title">uevent_ops</span>;</span> <span class="hljs-comment">// 该kset的uevent操作函数集，主要用于热插拔操作</span><br>&#125;;<br></code></pre></td></tr></table></figure>
+
+
+
+<p>ktype原型</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">kobj_type</span> &#123;</span><br>    <span class="hljs-type">void</span> (*release)(<span class="hljs-keyword">struct</span> kobject *kobj);  <span class="hljs-comment">// 通过该回调函数，可以将包含该种类型kobject的数据结构的内存空间释放</span><br>    <span class="hljs-type">const</span> <span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">sysfs_ops</span> *<span class="hljs-title">sysfs_ops</span>;</span>      <span class="hljs-comment">// 该Kobject的sysfs文件系统接口</span><br>    <span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">attribute</span> **<span class="hljs-title">default_attrs</span>;</span>       <span class="hljs-comment">// 该Kobject的atrribute列表（attribute表现为sysfs文件系统中的一个文件）</span><br>    <span class="hljs-comment">// ...</span><br>&#125;;<br></code></pre></td></tr></table></figure>
+
+
+
+<h3 id="kobject的生命周期"><a href="#kobject的生命周期" class="headerlink" title="kobject的生命周期"></a>kobject的生命周期</h3><ol>
+<li><p><strong>初始化</strong>：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-comment">// 初始化通过kmalloc等内存分配函数获得的struct kobject指针</span><br><span class="hljs-type">void</span> <span class="hljs-title function_">kobject_init</span><span class="hljs-params">(<span class="hljs-keyword">struct</span> kobject *kobj, <span class="hljs-keyword">struct</span> kobj_type *ktype)</span>;<br></code></pre></td></tr></table></figure>
+</li>
+<li><p><strong>添加到系统</strong>：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-comment">// 将初始化完成的kobject添加到kernel中，参数包括需要添加的kobject、该kobject的parent（用于形成层次结构，可以为空）、用于提供kobject name的格式化字符串。</span><br><span class="hljs-type">int</span> <span class="hljs-title function_">kobject_add</span><span class="hljs-params">(<span class="hljs-keyword">struct</span> kobject *kobj, ...)</span>;<br></code></pre></td></tr></table></figure>
+</li>
+<li><p><strong>引用管理</strong>：</p>
+<ul>
+<li><code>kobject_get()</code>增加引用</li>
+<li><code>kobject_put()</code>减少引用</li>
+</ul>
+</li>
+<li><p><strong>释放</strong>：<br>当引用计数为0时，由kobject_put调用ktype-&gt;release()释放资源</p>
+</li>
+</ol>
+<h3 id="kobject使用示例"><a href="#kobject使用示例" class="headerlink" title="kobject使用示例"></a>kobject使用示例</h3><p>创建简单的kobject</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;linux/kobject.h&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;linux/sysfs.h&gt;</span></span><br><br><span class="hljs-type">static</span> <span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">kobject</span> *<span class="hljs-title">my_kobj</span>;</span><br><br><span class="hljs-type">static</span> <span class="hljs-type">void</span> <span class="hljs-title function_">my_release</span><span class="hljs-params">(<span class="hljs-keyword">struct</span> kobject *kobj)</span><br>&#123;<br>    printk(KERN_INFO <span class="hljs-string">&quot;My kobject released\n&quot;</span>);<br>&#125;<br><br><span class="hljs-type">static</span> <span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">kobj_type</span> <span class="hljs-title">my_ktype</span> =</span> &#123;<br>    .release = my_release,<br>    .sysfs_ops = &amp;kobj_sysfs_ops,<br>&#125;;<br><br><span class="hljs-type">static</span> <span class="hljs-type">int</span> __init <span class="hljs-title function_">my_init</span><span class="hljs-params">(<span class="hljs-type">void</span>)</span><br>&#123;<br>    my_kobj = kzalloc(<span class="hljs-keyword">sizeof</span>(*my_kobj), GFP_KERNEL);<br>    <span class="hljs-keyword">if</span> (!my_kobj)<br>        <span class="hljs-keyword">return</span> -ENOMEM;<br>    <br>    kobject_init(my_kobj, &amp;my_ktype);<br>    <span class="hljs-keyword">if</span> (kobject_add(my_kobj, <span class="hljs-literal">NULL</span>, <span class="hljs-string">&quot;my_kobj&quot;</span>)) &#123;<br>        kobject_put(my_kobj); <span class="hljs-comment">// 引用计数+1</span><br>        <span class="hljs-keyword">return</span> -ENOMEM;<br>    &#125;<br>    <span class="hljs-keyword">return</span> <span class="hljs-number">0</span>;<br>&#125;<br><br><span class="hljs-type">static</span> <span class="hljs-type">void</span> __exit <span class="hljs-title function_">my_exit</span><span class="hljs-params">(<span class="hljs-type">void</span>)</span><br>&#123;<br>    kobject_put(my_kobj); <span class="hljs-comment">// 引用计数-1</span><br>&#125;<br></code></pre></td></tr></table></figure>
+
+
+
+<p>添加属性</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-type">static</span> <span class="hljs-type">ssize_t</span> <span class="hljs-title function_">my_attr_show</span><span class="hljs-params">(<span class="hljs-keyword">struct</span> kobject *kobj, </span><br><span class="hljs-params">                           <span class="hljs-keyword">struct</span> attribute *attr,</span><br><span class="hljs-params">                           <span class="hljs-type">char</span> *buf)</span><br>&#123;<br>    <span class="hljs-keyword">return</span> <span class="hljs-built_in">sprintf</span>(buf, <span class="hljs-string">&quot;Hello from kobject!\n&quot;</span>);<br>&#125;<br><br><span class="hljs-type">static</span> <span class="hljs-type">ssize_t</span> <span class="hljs-title function_">my_attr_store</span><span class="hljs-params">(<span class="hljs-keyword">struct</span> kobject *kobj,</span><br><span class="hljs-params">                            <span class="hljs-keyword">struct</span> attribute *attr,</span><br><span class="hljs-params">                            <span class="hljs-type">const</span> <span class="hljs-type">char</span> *buf, <span class="hljs-type">size_t</span> len)</span><br>&#123;<br>    printk(KERN_INFO <span class="hljs-string">&quot;Received: %s\n&quot;</span>, buf);<br>    <span class="hljs-keyword">return</span> len;<br>&#125;<br><br><span class="hljs-type">static</span> <span class="hljs-type">const</span> <span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">sysfs_ops</span> <span class="hljs-title">my_sysfs_ops</span> =</span> &#123;<br>    .show = my_attr_show,<br>    .store = my_attr_store,<br>&#125;;<br><br><span class="hljs-type">static</span> <span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">attribute</span> <span class="hljs-title">my_attr</span> =</span> &#123;<br>    .name = <span class="hljs-string">&quot;my_file&quot;</span>,<br>    .mode = <span class="hljs-number">0644</span>,<br>&#125;;<br><br><span class="hljs-type">static</span> <span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">attribute</span> *<span class="hljs-title">my_attrs</span>[] =</span> &#123;<br>    &amp;my_attr,<br>    <span class="hljs-literal">NULL</span>,<br>&#125;;<br><br><span class="hljs-type">static</span> <span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">kobj_type</span> <span class="hljs-title">my_ktype</span> =</span> &#123;<br>    .release = my_release,<br>    .sysfs_ops = &amp;my_sysfs_ops,<br>    .default_attrs = my_attrs,<br>&#125;;<br></code></pre></td></tr></table></figure>
+
+
+
+<h3 id="kobject-使用"><a href="#kobject-使用" class="headerlink" title="kobject 使用"></a>kobject 使用</h3><p>kobject是Linux设备模型的基础，被嵌入到各种高层结构中：</p>
+<ol>
+<li><strong>struct device</strong>：代表系统中的设备</li>
+<li><strong>struct device_driver</strong>：代表设备驱动</li>
+<li><strong>struct bus_type</strong>：代表总线类型</li>
+<li><strong>struct class</strong>：代表设备类</li>
+</ol>
+<p>这些高层结构通过内嵌kobject获得基本对象管理能力和sysfs表示能力。</p>
+<h2 id="Uevent"><a href="#Uevent" class="headerlink" title="Uevent"></a>Uevent</h2><h3 id="Uevent的功能"><a href="#Uevent的功能" class="headerlink" title="Uevent的功能"></a>Uevent的功能</h3><p>Uevent 是 Linux 内核中用于设备热插拔事件通知的重要机制（也是kobject的一部分），它是用户空间与内核空间通信的桥梁，主要用于设备添加、移除和状态变化时的通知。Uevent (User space event) 是内核向用户空间发送的事件通知，主要用途包括：</p>
+<ul>
+<li>设备热插拔通知：当设备插入或移除时通知用户空间</li>
+<li>设备状态变化：当设备状态发生重要变化时通知</li>
+<li>用户空间响应：触发用户空间程序（如 udev）执行相应操作</li>
+</ul>
+<p>Uevent的机制是比较简单的，设备模型中任何设备有事件需要上报时，会触发Uevent提供的接口。Uevent模块准备好上报事件的格式后，可以通过两个途径把事件上报到用户空间：一种是通过kmod模块，直接调用用户空间的可执行文件；另一种是通过netlink通信机制，将事件从内核空间传递给用户空间。</p>
+<h3 id="Uevent-的核心数据结构"><a href="#Uevent-的核心数据结构" class="headerlink" title="Uevent 的核心数据结构"></a>Uevent 的核心数据结构</h3><p>在利用Kmod向用户空间上报event事件时，会直接执行用户空间的可执行文件。而在Linux系统，可执行文件的执行，依赖于环境变量，因此kobj_uevent_env用于组织此次事件上报时的环境变量。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">kobject_uevent_env</span> &#123;</span><br>    <span class="hljs-type">char</span> *argv[<span class="hljs-number">3</span>];            <span class="hljs-comment">// 用于调用用户空间的程序</span><br>    <span class="hljs-type">char</span> *envp[UEVENT_NUM_ENVP]; <span class="hljs-comment">// 指针数组，用于保存每个环境变量的地址</span><br>    <span class="hljs-type">int</span> envp_idx;              <span class="hljs-comment">// 当前环境变量数组的索引</span><br>    <span class="hljs-type">char</span> buf[UEVENT_BUFFER_SIZE]; <span class="hljs-comment">// 环境变量缓冲区</span><br>    <span class="hljs-type">int</span> buflen;               <span class="hljs-comment">// 缓冲区已用长度</span><br>&#125;;<br></code></pre></td></tr></table></figure>
+
+
+
+<p>kset_uevent_ops是为kset量身订做的一个数据结构，里面主要包含filter和uevent两个回调函数</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">kset_uevent_ops</span> &#123;</span><br>    <span class="hljs-type">int</span> (*filter)(<span class="hljs-keyword">struct</span> kset *kset, <span class="hljs-keyword">struct</span> kobject *kobj);  <span class="hljs-comment">// 用于过滤uevent，由它所属的kset控制</span><br>    <span class="hljs-type">const</span> <span class="hljs-type">char</span> *(*name)(<span class="hljs-keyword">struct</span> kset *kset, <span class="hljs-keyword">struct</span> kobject *kobj);  <span class="hljs-comment">// 返回kset的名称</span><br>    <span class="hljs-type">int</span> (*uevent)(<span class="hljs-keyword">struct</span> kset *kset, <span class="hljs-keyword">struct</span> kobject *kobj,<br>                 <span class="hljs-keyword">struct</span> kobj_uevent_env *env); <span class="hljs-comment">// 为上报的event添加环境变量</span><br>&#125;;<br></code></pre></td></tr></table></figure>
+
+
+
+<h3 id="Uevent发送机制"><a href="#Uevent发送机制" class="headerlink" title="Uevent发送机制"></a>Uevent发送机制</h3><p>发送函数</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-type">int</span> <span class="hljs-title function_">kobject_uevent</span><span class="hljs-params">(<span class="hljs-keyword">struct</span> kobject *kobj, <span class="hljs-keyword">enum</span> kobject_action action)</span>; <span class="hljs-comment">// 上报一个指定action的uevent</span><br><span class="hljs-type">int</span> <span class="hljs-title function_">kobject_uevent_env</span><span class="hljs-params">(<span class="hljs-keyword">struct</span> kobject *kobj, <span class="hljs-keyword">enum</span> kobject_action action, <span class="hljs-type">char</span> *envp[])</span>; <span class="hljs-comment">// 以envp为环境变量进行上报</span><br></code></pre></td></tr></table></figure>
+
+<blockquote>
+<p>kobject_action定义了event的类型，包括：</p>
+<ul>
+<li>ADD&#x2F;REMOVE，Kobject（或上层数据结构）的添加&#x2F;移除事件。</li>
+<li>ONLINE&#x2F;OFFLINE，Kobject（或上层数据结构）的上线&#x2F;下线事件，其实是是否使能。</li>
+<li>CHANGE，Kobject（或上层数据结构）的状态或者内容发生改变。</li>
+<li>MOVE，Kobject（或上层数据结构）更改名称或者更改Parent（意味着在sysfs中更改了目录结构）。</li>
+<li>CHANGE，如果设备驱动需要上报的事件不再上面事件的范围内，或者是自定义的事件，可以使用该event，并携带相应的参数。</li>
+</ul>
+</blockquote>
+<h3 id="Uevent-的用户空间处理"><a href="#Uevent-的用户空间处理" class="headerlink" title="Uevent 的用户空间处理"></a>Uevent 的用户空间处理</h3><p>用户空间主要通过以下方式接收 uevent：</p>
+<ol>
+<li><strong>netlink 套接字</strong>：内核通过 NETLINK_KOBJECT_UEVENT 类型的 netlink 发送</li>
+<li><strong>udev 守护进程</strong>：主要的事件处理程序，负责：<ul>
+<li>创建设备节点</li>
+<li>设置设备权限</li>
+<li>加载必要驱动</li>
+<li>执行自定义脚本</li>
+</ul>
+</li>
+</ol>
+<h3 id="Uevent-使用示例"><a href="#Uevent-使用示例" class="headerlink" title="Uevent 使用示例"></a>Uevent 使用示例</h3><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-comment">// 当设备被探测时发送 ADD 事件</span><br><span class="hljs-type">int</span> <span class="hljs-title function_">probe</span><span class="hljs-params">(<span class="hljs-keyword">struct</span> device *dev)</span><br>&#123;<br>    <span class="hljs-comment">// ... 初始化设备 ...</span><br>    kobject_uevent(&amp;dev-&gt;kobj, KOBJ_ADD);<br>    <span class="hljs-keyword">return</span> <span class="hljs-number">0</span>;<br>&#125;<br><br><span class="hljs-comment">// 当设备被移除时发送 REMOVE 事件</span><br><span class="hljs-type">void</span> <span class="hljs-title function_">remove</span><span class="hljs-params">(<span class="hljs-keyword">struct</span> device *dev)</span><br>&#123;<br>    kobject_uevent(&amp;dev-&gt;kobj, KOBJ_REMOVE);<br>    <span class="hljs-comment">// ... 清理设备 ...</span><br>&#125;<br></code></pre></td></tr></table></figure>
+
+
+
+
+
+<h2 id="Sysfs"><a href="#Sysfs" class="headerlink" title="Sysfs"></a>Sysfs</h2><h3 id="Sysfs简介"><a href="#Sysfs简介" class="headerlink" title="Sysfs简介"></a>Sysfs简介</h3><p>Sysfs 是 Linux 内核中一个重要的虚拟文件系统，它提供了一个将内核数据结构、属性和对象关系导出到用户空间的机制。Sysfs 最初是为了更好地展示设备模型而开发的，现已成为内核与用户空间交互的标准接口之一。</p>
+<p>sysfs是一个基于RAM的文件系统，它和Kobject一起，可以将Kernel的数据结构导出到用户空间，以文件目录结构的形式，提供对这些数据结构（以及数据结构的属性）的访问支持。</p>
+<h3 id="sysfs和Kobject的关系"><a href="#sysfs和Kobject的关系" class="headerlink" title="sysfs和Kobject的关系"></a>sysfs和Kobject的关系</h3><p>每一个Kobject，都会对应sysfs中的一个目录。因此在将Kobject添加到Kernel时，create_dir接口会调用sysfs文件系统的创建目录接口，创建和Kobject对应的目录。通过以下函数创建 sysfs 条目：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-type">int</span> <span class="hljs-title function_">sysfs_create_dir</span><span class="hljs-params">(<span class="hljs-keyword">struct</span> kobject *kobj)</span>; <span class="hljs-comment">// 创建目录</span><br><span class="hljs-type">int</span> <span class="hljs-title function_">sysfs_create_file</span><span class="hljs-params">(<span class="hljs-keyword">struct</span> kobject *kobj, <span class="hljs-type">const</span> <span class="hljs-keyword">struct</span> attribute *attr)</span>; <span class="hljs-comment">// 创建文件</span><br></code></pre></td></tr></table></figure>
+
+
+
+<h3 id="Attribute"><a href="#Attribute" class="headerlink" title="Attribute"></a>Attribute</h3><p>Attribute（属性）是 Linux 内核中将内核数据结构暴露给用户空间的重要机制，主要通过 sysfs 虚拟文件系统实现。属性允许用户空间通过文件操作（读&#x2F;写）来与内核交互。</p>
+<p>Linux内核中，attribute分为普通的attribute和二进制attribute，如下：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-comment">// 普通的attribute，使用该attribute生成的sysfs文件，只能用字符串的形式读写。</span><br><span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">attribute</span> &#123;</span><br>    <span class="hljs-type">const</span> <span class="hljs-type">char</span> *name;   <span class="hljs-comment">// 属性名称（在sysfs中显示为文件名）</span><br>    <span class="hljs-type">umode_t</span> mode;       <span class="hljs-comment">// 文件权限（如0644）</span><br>&#125;;<br><br><span class="hljs-comment">// bin_attribute在struct attribute的基础上，增加了read、write等函数，因此它所生成的sysfs文件可以用任何方式读写。</span><br><span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">bin_attribute</span> &#123;</span><br>    <span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">attribute</span>    <span class="hljs-title">attr</span>;</span><br>    <span class="hljs-type">size_t</span>          size;<br>    <span class="hljs-type">void</span> *private;<br>    <span class="hljs-type">ssize_t</span> (*read)(<span class="hljs-keyword">struct</span> file *, <span class="hljs-keyword">struct</span> kobject *, <span class="hljs-keyword">struct</span> bin_attribute *,<br>                    <span class="hljs-type">char</span> *, <span class="hljs-type">loff_t</span>, <span class="hljs-type">size_t</span>);<br>    <span class="hljs-type">ssize_t</span> (*write)(<span class="hljs-keyword">struct</span> file *,<span class="hljs-keyword">struct</span> kobject *, <span class="hljs-keyword">struct</span> bin_attribute *,<br>                     <span class="hljs-type">char</span> *, <span class="hljs-type">loff_t</span>, <span class="hljs-type">size_t</span>);<br>    <span class="hljs-type">int</span> (*mmap)(<span class="hljs-keyword">struct</span> file *, <span class="hljs-keyword">struct</span> kobject *, <span class="hljs-keyword">struct</span> bin_attribute *attr,<br>                   <span class="hljs-keyword">struct</span> vm_area_struct *vma);<br>&#125;;<br></code></pre></td></tr></table></figure>
+
+
+
+<h3 id="Attribute-和-Kobject-在sysfs中的应用"><a href="#Attribute-和-Kobject-在sysfs中的应用" class="headerlink" title="Attribute 和 Kobject 在sysfs中的应用"></a>Attribute 和 Kobject 在sysfs中的应用</h3><p>每个 kobject 对应 sysfs 中的一个目录，attribute 对应目录中的文件：</p>
+<figure class="highlight gradle"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs gradle">kobject → <span class="hljs-regexp">/sys/</span>...<span class="hljs-regexp">/directory/</span><br>attribute → <span class="hljs-regexp">/sys/</span>...<span class="hljs-regexp">/directory/</span><span class="hljs-keyword">file</span><br></code></pre></td></tr></table></figure>
+
+<p>属性文件的操作通过 kobj_type 中的 sysfs_ops 实现：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">sysfs_ops</span> &#123;</span><br>    <span class="hljs-type">ssize_t</span> (*show)(<span class="hljs-keyword">struct</span> kobject *, <span class="hljs-keyword">struct</span> attribute *, <span class="hljs-type">char</span> *);<br>    <span class="hljs-type">ssize_t</span> (*store)(<span class="hljs-keyword">struct</span> kobject *, <span class="hljs-keyword">struct</span> attribute *, <span class="hljs-type">const</span> <span class="hljs-type">char</span> *, <span class="hljs-type">size_t</span>);<br>&#125;;<br></code></pre></td></tr></table></figure>
+
+
+
+<h3 id="Sysfs使用示例"><a href="#Sysfs使用示例" class="headerlink" title="Sysfs使用示例"></a>Sysfs使用示例</h3><p>创建简单的sysfs</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;linux/kobject.h&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;linux/sysfs.h&gt;</span></span><br><br><span class="hljs-type">static</span> <span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">kobject</span> *<span class="hljs-title">example_kobj</span>;</span><br><span class="hljs-type">static</span> <span class="hljs-type">int</span> example_value;<br><br><span class="hljs-type">static</span> <span class="hljs-type">ssize_t</span> <span class="hljs-title function_">example_show</span><span class="hljs-params">(<span class="hljs-keyword">struct</span> kobject *kobj, <span class="hljs-keyword">struct</span> attribute *attr,</span><br><span class="hljs-params">                           <span class="hljs-type">char</span> *buf)</span><br>&#123;<br>    <span class="hljs-keyword">return</span> <span class="hljs-built_in">sprintf</span>(buf, <span class="hljs-string">&quot;%d\n&quot;</span>, example_value);<br>&#125;<br><br><span class="hljs-type">static</span> <span class="hljs-type">ssize_t</span> <span class="hljs-title function_">example_store</span><span class="hljs-params">(<span class="hljs-keyword">struct</span> kobject *kobj, <span class="hljs-keyword">struct</span> attribute *attr,</span><br><span class="hljs-params">                            <span class="hljs-type">const</span> <span class="hljs-type">char</span> *buf, <span class="hljs-type">size_t</span> count)</span><br>&#123;<br>    <span class="hljs-built_in">sscanf</span>(buf, <span class="hljs-string">&quot;%d&quot;</span>, &amp;example_value);<br>    <span class="hljs-keyword">return</span> count;<br>&#125;<br><br><span class="hljs-type">static</span> <span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">sysfs_ops</span> <span class="hljs-title">example_sysfs_ops</span> =</span> &#123;<br>    .show = example_show,<br>    .store = example_store,<br>&#125;;<br><br><span class="hljs-type">static</span> <span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">attribute</span> <span class="hljs-title">example_attr</span> =</span> &#123;<br>    .name = <span class="hljs-string">&quot;example&quot;</span>,<br>    .mode = <span class="hljs-number">0644</span>,<br>&#125;;<br><br><span class="hljs-type">static</span> <span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">attribute</span> *<span class="hljs-title">example_attrs</span>[] =</span> &#123;<br>    &amp;example_attr,<br>    <span class="hljs-literal">NULL</span>,<br>&#125;;<br><br><span class="hljs-type">static</span> <span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">kobj_type</span> <span class="hljs-title">example_ktype</span> =</span> &#123;<br>    .sysfs_ops = &amp;example_sysfs_ops,<br>    .default_attrs = example_attrs,<br>&#125;;<br><br><span class="hljs-type">static</span> <span class="hljs-type">int</span> __init <span class="hljs-title function_">example_init</span><span class="hljs-params">(<span class="hljs-type">void</span>)</span><br>&#123;<br>    example_kobj = kzalloc(<span class="hljs-keyword">sizeof</span>(*example_kobj), GFP_KERNEL);<br>    kobject_init_and_add(example_kobj, &amp;example_ktype, <span class="hljs-literal">NULL</span>, <span class="hljs-string">&quot;example&quot;</span>);<br>    <span class="hljs-keyword">return</span> <span class="hljs-number">0</span>;<br>&#125;<br><br><span class="hljs-type">static</span> <span class="hljs-type">void</span> __exit <span class="hljs-title function_">example_exit</span><span class="hljs-params">(<span class="hljs-type">void</span>)</span><br>&#123;<br>    kobject_put(example_kobj);<br>&#125;<br><br>module_init(example_init);<br>module_exit(example_exit);<br></code></pre></td></tr></table></figure>
+
+
+
+<p>设备驱动中的 sysfs 使用</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-type">static</span> <span class="hljs-type">int</span> device_status;<br><br><span class="hljs-type">static</span> <span class="hljs-type">ssize_t</span> <span class="hljs-title function_">status_show</span><span class="hljs-params">(<span class="hljs-keyword">struct</span> device *dev,</span><br><span class="hljs-params">                         <span class="hljs-keyword">struct</span> device_attribute *attr,</span><br><span class="hljs-params">                         <span class="hljs-type">char</span> *buf)</span><br>&#123;<br>    <span class="hljs-keyword">return</span> <span class="hljs-built_in">sprintf</span>(buf, <span class="hljs-string">&quot;%d\n&quot;</span>, device_status);<br>&#125;<br><br><span class="hljs-type">static</span> <span class="hljs-type">ssize_t</span> <span class="hljs-title function_">status_store</span><span class="hljs-params">(<span class="hljs-keyword">struct</span> device *dev,</span><br><span class="hljs-params">                          <span class="hljs-keyword">struct</span> device_attribute *attr,</span><br><span class="hljs-params">                          <span class="hljs-type">const</span> <span class="hljs-type">char</span> *buf, <span class="hljs-type">size_t</span> count)</span><br>&#123;<br>    <span class="hljs-type">int</span> err = kstrtoint(buf, <span class="hljs-number">10</span>, &amp;device_status);<br>    <span class="hljs-keyword">if</span> (err &lt; <span class="hljs-number">0</span>)<br>        <span class="hljs-keyword">return</span> err;<br>    <span class="hljs-keyword">return</span> count;<br>&#125;<br><br><span class="hljs-type">static</span> <span class="hljs-title function_">DEVICE_ATTR_RW</span><span class="hljs-params">(status)</span>;<br><br><span class="hljs-type">static</span> <span class="hljs-type">int</span> <span class="hljs-title function_">my_probe</span><span class="hljs-params">(<span class="hljs-keyword">struct</span> device *dev)</span><br>&#123;<br>    device_create_file(dev, &amp;dev_attr_status);<br>    <span class="hljs-keyword">return</span> <span class="hljs-number">0</span>;<br>&#125;<br><br><span class="hljs-type">static</span> <span class="hljs-type">int</span> <span class="hljs-title function_">my_remove</span><span class="hljs-params">(<span class="hljs-keyword">struct</span> device *dev)</span><br>&#123;<br>    device_remove_file(dev, &amp;dev_attr_status);<br>    <span class="hljs-keyword">return</span> <span class="hljs-number">0</span>;<br>&#125;<br><br><br><span class="hljs-comment">// 还有一种使用属性组的方式</span><br><span class="hljs-type">static</span> <span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">attribute</span> *<span class="hljs-title">dev_attrs</span>[] =</span> &#123;<br>    &amp;dev_attr_value.attr,<br>    &amp;dev_attr_status.attr,<br>    <span class="hljs-literal">NULL</span>,<br>&#125;;<br><br><span class="hljs-type">static</span> <span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">attribute_group</span> <span class="hljs-title">dev_attr_group</span> =</span> &#123;<br>    .attrs = dev_attrs,<br>&#125;;<br><br><span class="hljs-comment">// 注册</span><br>sysfs_create_group(&amp;dev-&gt;kobj, &amp;dev_attr_group);<br><br><span class="hljs-comment">// 注销</span><br>sysfs_remove_group(&amp;dev-&gt;kobj, &amp;dev_attr_group);<br></code></pre></td></tr></table></figure>
+
+
+
+<h2 id="Device-Device-Driver"><a href="#Device-Device-Driver" class="headerlink" title="Device &amp; Device Driver"></a>Device &amp; Device Driver</h2><p><code>struct device</code> 是 Linux 内核设备模型中的核心数据结构，它代表了系统中一个抽象的硬件或虚拟设备。device 结构提供了设备的统一表示和管理机制，是驱动开发的基础。</p>
+<p><code>struct device_driver</code> 是 Linux 内核中表示设备驱动程序的核心数据结构，它定义了驱动程序与设备交互的通用接口和行为规范。</p>
+<h3 id="device-结构体定义"><a href="#device-结构体定义" class="headerlink" title="device 结构体定义"></a>device 结构体定义</h3><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">device</span> &#123;</span><br>    <span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">device</span>       *<span class="hljs-title">parent</span>;</span>        <span class="hljs-comment">// 父设备指针，一般是该设备所从属的bus、controller等设备</span><br>    <span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">device_private</span>   *<span class="hljs-title">p</span>;</span>        <span class="hljs-comment">// 设备私有数据，会保存子设备链表，用于添加到bus/driver/prent等设备中的链表头等等</span><br>    <span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">kobject</span> <span class="hljs-title">kobj</span>;</span>              <span class="hljs-comment">// 内嵌的kobject，用于sysfs和引用计数</span><br>    <span class="hljs-type">const</span> <span class="hljs-type">char</span>      *init_name;       <span class="hljs-comment">// 初始设备名称</span><br>    <span class="hljs-type">const</span> <span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">device_type</span> *<span class="hljs-title">type</span>;</span>   <span class="hljs-comment">// 设备类型，和device的关系类似于kobj_type和kobject的关系</span><br>    <span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">bus_type</span> *<span class="hljs-title">bus</span>;</span>             <span class="hljs-comment">// 所属总线类型</span><br>    <span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">device_driver</span> *<span class="hljs-title">driver</span>;</span>     <span class="hljs-comment">// 该device对应的device driver</span><br>    <span class="hljs-type">void</span>        *platform_data;       <span class="hljs-comment">// 平台特定数据</span><br>    <span class="hljs-type">void</span>        *driver_data;         <span class="hljs-comment">// 驱动私有数据</span><br>    <span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">device_node</span>  *<span class="hljs-title">of_node</span>;</span>     <span class="hljs-comment">// 设备树节点</span><br>    <span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-keyword">class</span>    *<span class="hljs-keyword">class</span>;</span>           <span class="hljs-comment">// 该设备属于哪个class</span><br>    <span class="hljs-type">const</span> <span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">attribute_group</span> **<span class="hljs-title">groups</span>;</span> <span class="hljs-comment">// 该设备的默认attribute集合，将会在设备注册时自动在sysfs中创建对应的文件</span><br>    <span class="hljs-comment">// ... 其他成员 ...</span><br>&#125;;<br></code></pre></td></tr></table></figure>
+
+
+
+<h3 id="device-driver-结构体定义"><a href="#device-driver-结构体定义" class="headerlink" title="device_driver 结构体定义"></a>device_driver 结构体定义</h3><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">device_driver</span> &#123;</span><br>    <span class="hljs-type">const</span> <span class="hljs-type">char</span> *name;              <span class="hljs-comment">// 驱动名称</span><br>    <span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">bus_type</span> *<span class="hljs-title">bus</span>;</span>          <span class="hljs-comment">// 所属总线类型，内核要保证在driver运行前，设备所依赖的总线能够正确初始化。</span><br>    <br>    <span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">module</span> *<span class="hljs-title">owner</span>;</span>          <span class="hljs-comment">// 所属模块(THIS_MODULE)</span><br>    <span class="hljs-type">const</span> <span class="hljs-type">char</span> *mod_name;          <span class="hljs-comment">// 用于模块加载</span><br>    <br>    <span class="hljs-type">bool</span> suppress_bind_attrs;      <span class="hljs-comment">// 是否禁用bind/unbind属性（bind/unbind是从用户空间手动的为driver绑定/解绑定指定的设备的机制）</span><br>    <br>    <span class="hljs-comment">// 驱动核心操作</span><br>    <span class="hljs-type">int</span> (*probe) (<span class="hljs-keyword">struct</span> device *dev);         <span class="hljs-comment">// 设备探测，driver逻辑的开始</span><br>    <span class="hljs-type">int</span> (*remove) (<span class="hljs-keyword">struct</span> device *dev);       <span class="hljs-comment">// 设备移除，driver逻辑的结束</span><br>    <span class="hljs-type">void</span> (*shutdown) (<span class="hljs-keyword">struct</span> device *dev);    <span class="hljs-comment">// 设备关机，电源管理相关</span><br>    <span class="hljs-type">int</span> (*suspend) (<span class="hljs-keyword">struct</span> device *dev, <span class="hljs-type">pm_message_t</span> state); <span class="hljs-comment">// 设备挂起，电源管理相关</span><br>    <span class="hljs-type">int</span> (*resume) (<span class="hljs-keyword">struct</span> device *dev);       <span class="hljs-comment">// 设备恢复，电源管理相关</span><br>    <br>    <span class="hljs-type">const</span> <span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">attribute_group</span> **<span class="hljs-title">groups</span>;</span>     <span class="hljs-comment">// 默认属性组</span><br>    <span class="hljs-type">const</span> <span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">dev_pm_ops</span> *<span class="hljs-title">pm</span>;</span>              <span class="hljs-comment">// 电源管理操作</span><br>    <br>    <span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">driver_private</span> *<span class="hljs-title">p</span>;</span>                 <span class="hljs-comment">// 驱动私有数据</span><br>&#125;;<br></code></pre></td></tr></table></figure>
+
+
+
+<h3 id="设备模型框架下驱动开发示例"><a href="#设备模型框架下驱动开发示例" class="headerlink" title="设备模型框架下驱动开发示例"></a>设备模型框架下驱动开发示例</h3><p>在设备模型框架下，设备驱动的开发步骤如下：</p>
+<ol>
+<li>分配一个struct device类型的变量，填充必要的信息后，把它注册到内核中。</li>
+<li>分配一个struct device_driver类型的变量，填充必要的信息后，把它注册到内核中。</li>
+</ol>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-comment">// 步骤一，分配一个struct device类型的变量，填充必要的信息后，把它注册到内核中。</span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;linux/platform_device.h&gt;</span></span><br><br><span class="hljs-type">static</span> <span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">resource</span> <span class="hljs-title">mydev_resources</span>[] =</span> &#123;<br>    &#123;<br>        .start = <span class="hljs-number">0x12340000</span>,<br>        .end = <span class="hljs-number">0x1234ffff</span>,<br>        .flags = IORESOURCE_MEM,<br>    &#125;,<br>    <span class="hljs-comment">// 更多资源...</span><br>&#125;;<br><br><span class="hljs-type">static</span> <span class="hljs-type">void</span> <span class="hljs-title function_">mydev_release</span><span class="hljs-params">(<span class="hljs-keyword">struct</span> device *dev)</span><br>&#123;<br>    <span class="hljs-comment">// 释放设备资源</span><br>&#125;<br><br><span class="hljs-type">static</span> <span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">platform_device</span> <span class="hljs-title">mydev</span> =</span> &#123;<br>    .name = <span class="hljs-string">&quot;my-device&quot;</span>,<br>    .id = <span class="hljs-number">-1</span>,<br>    .resource = mydev_resources,<br>    .num_resources = ARRAY_SIZE(mydev_resources),<br>    .dev = &#123;<br>        .release = mydev_release,<br>    &#125;,<br>&#125;;<br><br><span class="hljs-type">static</span> <span class="hljs-type">int</span> __init <span class="hljs-title function_">mydev_init</span><span class="hljs-params">(<span class="hljs-type">void</span>)</span><br>&#123;<br>    <span class="hljs-keyword">return</span> platform_device_register(&amp;mydev);<br>&#125;<br><br><span class="hljs-type">static</span> <span class="hljs-type">void</span> __exit <span class="hljs-title function_">mydev_exit</span><span class="hljs-params">(<span class="hljs-type">void</span>)</span><br>&#123;<br>    platform_device_unregister(&amp;mydev);<br>&#125;<br><br><br><span class="hljs-comment">// 步骤二，1. 分配一个struct device_driver类型的变量，填充必要的信息后，把它注册到内核中。</span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;linux/platform_device.h&gt;</span></span><br><br><span class="hljs-type">static</span> <span class="hljs-type">int</span> <span class="hljs-title function_">my_probe</span><span class="hljs-params">(<span class="hljs-keyword">struct</span> platform_device *pdev)</span><br>&#123;<br>    <span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">device</span> *<span class="hljs-title">dev</span> =</span> &amp;pdev-&gt;dev;<br>    <span class="hljs-comment">// 初始化设备</span><br>    dev_info(dev, <span class="hljs-string">&quot;Device probed successfully\n&quot;</span>);<br>    <span class="hljs-keyword">return</span> <span class="hljs-number">0</span>;<br>&#125;<br><br><span class="hljs-type">static</span> <span class="hljs-type">int</span> <span class="hljs-title function_">my_remove</span><span class="hljs-params">(<span class="hljs-keyword">struct</span> platform_device *pdev)</span><br>&#123;<br>    <span class="hljs-comment">// 清理设备资源</span><br>    <span class="hljs-keyword">return</span> <span class="hljs-number">0</span>;<br>&#125;<br><br><span class="hljs-type">static</span> <span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">platform_driver</span> <span class="hljs-title">my_driver</span> =</span> &#123;<br>    .probe = my_probe,<br>    .remove = my_remove,<br>    .driver = &#123;<br>        .name = <span class="hljs-string">&quot;my-platform-device&quot;</span>,<br>        .owner = THIS_MODULE,<br>    &#125;,<br>&#125;;<br><br>module_platform_driver(my_driver);  <span class="hljs-comment">// 自动处理注册/注销</span><br></code></pre></td></tr></table></figure>
+
+
+
+<h3 id="设备驱动probe的时机"><a href="#设备驱动probe的时机" class="headerlink" title="设备驱动probe的时机"></a>设备驱动probe的时机</h3><p>所谓的”probe”，是指在Linux内核中，如果存在相同名称的device和device_driver（注：还存在其它方式，我们先不关注了），内核就会执行device_driver中的probe回调函数，而该函数就是所有driver的入口，可以执行诸如硬件设备初始化、字符设备注册、设备文件操作ops注册等动作。</p>
+<p>基本触发</p>
+<ul>
+<li>设备注册时匹配已有驱动，如：device_register，device_add，device_create_vargs，device_create</li>
+<li>驱动注册时匹配已有设备，如：driver_register</li>
+</ul>
+<p>动态触发</p>
+<ul>
+<li>热插拔事件，对于支持热插拔的总线(如USB&#x2F;PCIe)，当设备插入时触发</li>
+<li>手动绑定操作，通过sysfs手动绑定设备到驱动，如：<code>echo &lt;device_id&gt; &gt; /sys/bus/&lt;bus&gt;/drivers/&lt;driver&gt;/bind</code></li>
+</ul>
+<p>特殊场景触发</p>
+<ul>
+<li>延迟probe机制，如当依赖资源(如时钟、电源)未就绪时，probe返回<code>-EPROBE_DEFER</code>，设备被加入延迟探测列表，当依赖资源注册后会重新触发匹配。</li>
+<li>设备树匹配触发，使用设备树时，通过compatible属性匹配。内核解析设备树节点，根据<code>compatible</code>属性匹配驱动，匹配成功则创建platform_device并触发probe。</li>
+</ul>
+<h3 id="属性创建"><a href="#属性创建" class="headerlink" title="属性创建"></a>属性创建</h3><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-comment">// device 属性创建</span><br><span class="hljs-type">static</span> <span class="hljs-type">ssize_t</span> <span class="hljs-title function_">status_show</span><span class="hljs-params">(<span class="hljs-keyword">struct</span> device *dev,</span><br><span class="hljs-params">                         <span class="hljs-keyword">struct</span> device_attribute *attr,</span><br><span class="hljs-params">                         <span class="hljs-type">char</span> *buf)</span><br>&#123;<br>    <span class="hljs-keyword">return</span> <span class="hljs-built_in">sprintf</span>(buf, <span class="hljs-string">&quot;%d\n&quot;</span>, get_device_status(dev));<br>&#125;<br><br><span class="hljs-type">static</span> <span class="hljs-title function_">DEVICE_ATTR_RO</span><span class="hljs-params">(status)</span>;<br><br><span class="hljs-comment">// 在probe函数中</span><br>device_create_file(dev, &amp;dev_attr_status);<br><br><span class="hljs-comment">// 在remove函数中</span><br>device_remove_file(dev, &amp;dev_attr_status);<br><br><br><span class="hljs-comment">// driver 属性创建</span><br><span class="hljs-type">static</span> <span class="hljs-type">ssize_t</span> <span class="hljs-title function_">version_show</span><span class="hljs-params">(<span class="hljs-keyword">struct</span> device_driver *drv, <span class="hljs-type">char</span> *buf)</span><br>&#123;<br>    <span class="hljs-keyword">return</span> <span class="hljs-built_in">sprintf</span>(buf, <span class="hljs-string">&quot;1.0.0\n&quot;</span>);<br>&#125;<br><br><span class="hljs-type">static</span> <span class="hljs-title function_">DRIVER_ATTR_RO</span><span class="hljs-params">(version)</span>;<br><br><span class="hljs-type">static</span> <span class="hljs-type">int</span> __init <span class="hljs-title function_">my_init</span><span class="hljs-params">(<span class="hljs-type">void</span>)</span><br>&#123;<br>    <span class="hljs-type">int</span> ret;<br>    ret = driver_register(&amp;my_driver);<br>    <span class="hljs-keyword">if</span> (ret)<br>        <span class="hljs-keyword">return</span> ret;<br>        <br>    ret = driver_create_file(&amp;my_driver, &amp;driver_attr_version);<br>    <span class="hljs-keyword">if</span> (ret) &#123;<br>        driver_unregister(&amp;my_driver);<br>        <span class="hljs-keyword">return</span> ret;<br>    &#125;<br>    <span class="hljs-keyword">return</span> <span class="hljs-number">0</span>;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+
+
+
+
+<h2 id="Bus"><a href="#Bus" class="headerlink" title="Bus"></a>Bus</h2><h3 id="Bus-简介"><a href="#Bus-简介" class="headerlink" title="Bus 简介"></a>Bus 简介</h3><p>在Linux设备模型中，Bus（总线）是一类特殊的设备，它是连接处理器和其它设备之间的通道（channel）。为了方便设备模型的实现，内核规定，系统中的每个设备都要连接在一个Bus上，这个Bus可以是一个内部Bus、虚拟Bus或者Platform Bus。</p>
+<h3 id="Bus-结构体定义"><a href="#Bus-结构体定义" class="headerlink" title="Bus 结构体定义"></a>Bus 结构体定义</h3><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">bus_type</span> &#123;</span><br>    <span class="hljs-type">const</span> <span class="hljs-type">char</span>      *name;           <span class="hljs-comment">// bus的名称，会在sysfs中以目录的形式存在，如platform bus在sysfs中表现为&quot;/sys/bus/platform”</span><br>    <span class="hljs-type">const</span> <span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">attribute_group</span> **<span class="hljs-title">bus_groups</span>;</span> <span class="hljs-comment">// 总线属性</span><br>    <span class="hljs-type">const</span> <span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">attribute_group</span> **<span class="hljs-title">dev_groups</span>;</span> <span class="hljs-comment">// 设备默认属性</span><br>    <span class="hljs-type">const</span> <span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">attribute_group</span> **<span class="hljs-title">drv_groups</span>;</span> <span class="hljs-comment">// 驱动默认属性</span><br>    <br>    <span class="hljs-type">int</span> (*match)(<span class="hljs-keyword">struct</span> device *dev, <span class="hljs-keyword">struct</span> device_driver *drv); <span class="hljs-comment">// 匹配函数，当任何属于该Bus的device或者device_driver添加到内核时，内核都会调用该接口，如果新加的device或device_driver匹配上了自己的另一半的话，该接口要返回非零值，此时Bus模块的核心逻辑就会执行后续的处理。</span><br>    <span class="hljs-type">int</span> (*uevent)(<span class="hljs-keyword">struct</span> device *dev, <span class="hljs-keyword">struct</span> kobj_uevent_env *env); <span class="hljs-comment">// 热插拔事件</span><br>    <br>    <span class="hljs-type">int</span> (*probe)(<span class="hljs-keyword">struct</span> device *dev);     <span class="hljs-comment">// 设备探测，在执行device_driver的probe前，需要先执行bus的probe</span><br>    <span class="hljs-type">int</span> (*remove)(<span class="hljs-keyword">struct</span> device *dev);    <span class="hljs-comment">// 设备移除</span><br>    <span class="hljs-type">void</span> (*shutdown)(<span class="hljs-keyword">struct</span> device *dev); <span class="hljs-comment">// 设备关机，电源管理相关</span><br>    <br>    <span class="hljs-type">int</span> (*suspend)(<span class="hljs-keyword">struct</span> device *dev, <span class="hljs-type">pm_message_t</span> state); <span class="hljs-comment">// 挂起，电源管理相关</span><br>    <span class="hljs-type">int</span> (*resume)(<span class="hljs-keyword">struct</span> device *dev);    <span class="hljs-comment">// 恢复，电源管理相关</span><br>    <br>    <span class="hljs-type">const</span> <span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">dev_pm_ops</span> *<span class="hljs-title">pm</span>;</span>         <span class="hljs-comment">// 电源管理操作</span><br>    <br>    <span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">subsys_private</span> *<span class="hljs-title">p</span>;</span>            <span class="hljs-comment">// 私有数据</span><br>&#125;;<br></code></pre></td></tr></table></figure>
+
+
+
+<h3 id="总线工作机制"><a href="#总线工作机制" class="headerlink" title="总线工作机制"></a>总线工作机制</h3><pre><code class=" mermaid">sequenceDiagram
+    硬件设备-&gt;&gt;总线控制器: 设备连接/断开
+    总线控制器-&gt;&gt;内核: 产生中断/事件
+    内核-&gt;&gt;总线驱动: 枚举设备
+    总线驱动-&gt;&gt;设备模型: device_register()
+</code></pre>
+
+
+
+<h3 id="创建自定义总线"><a href="#创建自定义总线" class="headerlink" title="创建自定义总线"></a>创建自定义总线</h3><p>定义总线类型</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-type">static</span> <span class="hljs-type">int</span> <span class="hljs-title function_">my_bus_match</span><span class="hljs-params">(<span class="hljs-keyword">struct</span> device *dev, <span class="hljs-keyword">struct</span> device_driver *drv)</span><br>&#123;<br>    <span class="hljs-keyword">return</span> of_driver_match_device(dev, drv); <span class="hljs-comment">// 基于设备树匹配</span><br>&#125;<br><br><span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">bus_type</span> <span class="hljs-title">my_bus_type</span> =</span> &#123;<br>    .name = <span class="hljs-string">&quot;mybus&quot;</span>,<br>    .match = my_bus_match,<br>    .uevent = my_uevent,<br>&#125;;<br></code></pre></td></tr></table></figure>
+
+
+
+<p>注册总线</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs c">ret = bus_register(&amp;my_bus_type);<br><span class="hljs-keyword">if</span> (ret)<br>    <span class="hljs-keyword">return</span> ret;<br></code></pre></td></tr></table></figure>
+
+
+
+<p>定义总线设备</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">my_device</span> &#123;</span><br>    <span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">device</span> <span class="hljs-title">dev</span>;</span><br>    <span class="hljs-type">int</span> id;<br>    <span class="hljs-comment">// 设备特定数据</span><br>&#125;;<br><br><span class="hljs-type">static</span> <span class="hljs-type">void</span> <span class="hljs-title function_">my_dev_release</span><span class="hljs-params">(<span class="hljs-keyword">struct</span> device *dev)</span><br>&#123;<br>    kfree(to_my_device(dev));<br>&#125;<br><br><span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">my_device</span> *<span class="hljs-title">my_dev</span> =</span> kzalloc(<span class="hljs-keyword">sizeof</span>(*my_dev), GFP_KERNEL);<br>my_dev-&gt;dev.bus = &amp;my_bus_type;<br>my_dev-&gt;dev.parent = &amp;my_bus_dev;<br>my_dev-&gt;dev.release = my_dev_release;<br>device_register(&amp;my_dev-&gt;dev);<br></code></pre></td></tr></table></figure>
+
+
+
+<p>定义总线驱动</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">my_driver</span> &#123;</span><br>    <span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">device_driver</span> <span class="hljs-title">driver</span>;</span><br>    <span class="hljs-type">const</span> <span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">my_device_id</span> *<span class="hljs-title">id_table</span>;</span><br>&#125;;<br><br><span class="hljs-type">static</span> <span class="hljs-type">int</span> <span class="hljs-title function_">my_probe</span><span class="hljs-params">(<span class="hljs-keyword">struct</span> device *dev)</span><br>&#123;<br>    <span class="hljs-comment">// 初始化设备</span><br>    <span class="hljs-keyword">return</span> <span class="hljs-number">0</span>;<br>&#125;<br><br><span class="hljs-type">static</span> <span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">my_driver</span> <span class="hljs-title">my_drv</span> =</span> &#123;<br>    .driver = &#123;<br>        .name = <span class="hljs-string">&quot;mydrv&quot;</span>,<br>        .bus = &amp;my_bus_type,<br>        .probe = my_probe,<br>    &#125;,<br>    .id_table = my_dev_ids,<br>&#125;;<br><br>driver_register(&amp;my_drv.driver);<br></code></pre></td></tr></table></figure>
+
+
+
+<h2 id="Class"><a href="#Class" class="headerlink" title="Class"></a>Class</h2><p>在Linux设备模型中，Class（设备类）是对<strong>具有相同功能特性的设备进行高层次抽象</strong>的核心机制，它为用户空间提供了统一的功能视图，而不管设备具体连接在什么总线上。</p>
+<h3 id="Class的核心数据结构"><a href="#Class的核心数据结构" class="headerlink" title="Class的核心数据结构"></a>Class的核心数据结构</h3><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-keyword">class</span> &#123;</span><br>    <span class="hljs-type">const</span> <span class="hljs-type">char</span>              *name;       <span class="hljs-comment">// 类名称(如&quot;input&quot;,&quot;block&quot;)</span><br>    <span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">module</span>           *<span class="hljs-title">owner</span>;</span>      <span class="hljs-comment">// 所属模块</span><br>    <br>    <span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">class_attribute</span>          *<span class="hljs-title">class_attrs</span>;</span>      <span class="hljs-comment">// 类属性</span><br>    <span class="hljs-type">const</span> <span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">attribute_group</span>    **<span class="hljs-title">dev_groups</span>;</span>      <span class="hljs-comment">// 设备默认属性</span><br>    <span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">kobject</span>                  *<span class="hljs-title">dev_kobj</span>;</span>         <span class="hljs-comment">// 类设备目录</span><br>    <br>    <span class="hljs-type">int</span> (*dev_uevent)(<span class="hljs-keyword">struct</span> device *dev, <span class="hljs-keyword">struct</span> kobj_uevent_env *env); <span class="hljs-comment">// 处理class下设备的热插拔事件</span><br>    <span class="hljs-type">char</span> *(*devnode)(<span class="hljs-keyword">struct</span> device *dev, <span class="hljs-type">umode_t</span> *mode); <span class="hljs-comment">// 设备节点创建</span><br>    <br>    <span class="hljs-type">void</span> (*class_release)(<span class="hljs-keyword">struct</span> class *class);        <span class="hljs-comment">// release自身的回调函数</span><br>    <span class="hljs-type">void</span> (*dev_release)(<span class="hljs-keyword">struct</span> device *dev);          <span class="hljs-comment">// release时依次检查Device、Device Type以及Device所在的class，是否注册release接口，如果有则调用相应的release接口release设备指针。</span><br>    <br>    <span class="hljs-type">int</span> (*suspend)(<span class="hljs-keyword">struct</span> device *dev, <span class="hljs-type">pm_message_t</span> state); <span class="hljs-comment">// 挂起</span><br>    <span class="hljs-type">int</span> (*resume)(<span class="hljs-keyword">struct</span> device *dev);                <span class="hljs-comment">// 恢复</span><br>    <br>    <span class="hljs-type">const</span> <span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">kobj_ns_type_operations</span> *<span class="hljs-title">ns_type</span>;</span><br>    <span class="hljs-type">const</span> <span class="hljs-type">void</span> *(*namespace)(<span class="hljs-keyword">struct</span> device *dev);<br>    <br>    <span class="hljs-type">const</span> <span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">dev_pm_ops</span> *<span class="hljs-title">pm</span>;</span>                     <span class="hljs-comment">// 电源管理</span><br>    <br>    <span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">subsys_private</span> *<span class="hljs-title">p</span>;</span>                        <span class="hljs-comment">// 私有数据</span><br>&#125;;<br></code></pre></td></tr></table></figure>
+
+
+
+<h3 id="Class与Sysfs的交互"><a href="#Class与Sysfs的交互" class="headerlink" title="Class与Sysfs的交互"></a>Class与Sysfs的交互</h3><figure class="highlight nix"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs nix"><span class="hljs-operator">/</span>sys<span class="hljs-operator">/</span>class<span class="hljs-symbol">/</span><br>    ├── myclass<span class="hljs-symbol">/</span><br>    │   ├── mydev0<span class="hljs-symbol">/</span>        <span class="hljs-comment"># 类设备目录</span><br>    │   │   ├── dev        <span class="hljs-comment"># 设备号</span><br>    │   │   ├── subsystem <span class="hljs-operator">-&gt;</span> <span class="hljs-symbol">../../myclass</span><br>    │   │   └── power<span class="hljs-symbol">/</span>     <span class="hljs-comment"># 电源管理接口</span><br>    │   ├── mydev1<span class="hljs-symbol">/</span><br>    │   └── version        <span class="hljs-comment"># 类属性</span><br></code></pre></td></tr></table></figure>
+
+
+
+<h3 id="Class的典型实例"><a href="#Class的典型实例" class="headerlink" title="Class的典型实例"></a>Class的典型实例</h3><p>输入子系统(class input)：<code>/sys/class/input/</code>，用于统一管理键盘、鼠标等输入设备</p>
+<p>网络设备(class net)：<code>/sys/class/net/</code>，用于管理所有网络接口，提供统一的统计和控制接口</p>
+<p>块设备(class block)：<code>/sys/class/block/</code>，用于管理磁盘和分区</p>
+<h2 id="Platform-device"><a href="#Platform-device" class="headerlink" title="Platform device"></a>Platform device</h2><p>Platform Device是Linux内核中用于表示不依赖于传统总线（如PCI、USB）的设备的抽象机制。这些设备通过CPU bus直接寻址，对这些设备进行了更进一步的封装，抽象出paltform bus、platform device和platform driver，以便驱动开发人员可以方便的开发这类设备的驱动。</p>
+<h3 id="核心数据结构"><a href="#核心数据结构" class="headerlink" title="核心数据结构"></a>核心数据结构</h3><p>platform_device</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">platform_device</span> &#123;</span><br>    <span class="hljs-type">const</span> <span class="hljs-type">char</span>      *name;         <span class="hljs-comment">// 设备名称(匹配驱动用)</span><br>    <span class="hljs-type">int</span>             id;            <span class="hljs-comment">// 用于标识该设备的ID(-1表示单个实例)</span><br>    <span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">device</span>   <span class="hljs-title">dev</span>;</span>           <span class="hljs-comment">// 内嵌的通用设备结构</span><br>    <span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">resource</span> *<span class="hljs-title">resource</span>;</span>     <span class="hljs-comment">// 设备资源数组</span><br>    u32             num_resources; <span class="hljs-comment">// 该设备的资源描述，由struct resource（include/linux/ioport.h）结构抽象</span><br>    <br>    <span class="hljs-type">const</span> <span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">platform_device_id</span> *<span class="hljs-title">id_entry</span>;</span> <span class="hljs-comment">// ID表</span><br>    <br>    <span class="hljs-comment">/* 设备树相关 */</span><br>    <span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">of_dev_auxdata</span> *<span class="hljs-title">devt_auxdata</span>;</span><br>    <span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">mfd_cell</span> *<span class="hljs-title">mfd_cell</span>;</span><br>    <br>    <span class="hljs-comment">/* 私有数据 */</span><br>    <span class="hljs-type">void</span> *platform_data;           <span class="hljs-comment">// 平台特定数据</span><br>    <span class="hljs-type">void</span> *driver_data;             <span class="hljs-comment">// 驱动私有数据</span><br>&#125;;<br></code></pre></td></tr></table></figure>
+
+
+
+<p>platform_driver</p>
+<p>platform_driver结构和struct device_driver非常类似，无非就是提供probe、remove、suspend、resume等回调函数</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">platform_driver</span> &#123;</span><br>    <span class="hljs-type">int</span> (*probe)(<span class="hljs-keyword">struct</span> platform_device *);   <span class="hljs-comment">// 设备探测</span><br>    <span class="hljs-type">int</span> (*remove)(<span class="hljs-keyword">struct</span> platform_device *);  <span class="hljs-comment">// 设备移除</span><br>    <span class="hljs-type">void</span> (*shutdown)(<span class="hljs-keyword">struct</span> platform_device *);<br>    <span class="hljs-type">int</span> (*suspend)(<span class="hljs-keyword">struct</span> platform_device *, <span class="hljs-type">pm_message_t</span> state);<br>    <span class="hljs-type">int</span> (*resume)(<span class="hljs-keyword">struct</span> platform_device *);<br>    <br>    <span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">device_driver</span> <span class="hljs-title">driver</span>;</span>    <span class="hljs-comment">// 内嵌的标准驱动结构</span><br>    <span class="hljs-type">const</span> <span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">platform_device_id</span> *<span class="hljs-title">id_table</span>;</span> <span class="hljs-comment">// 设备匹配表</span><br>&#125;;<br></code></pre></td></tr></table></figure>
+
+
+
+<h3 id="Platform-Device-API"><a href="#Platform-Device-API" class="headerlink" title="Platform Device API"></a>Platform Device API</h3><p>Platform Device 机制提供了一系列 API 用于设备注册、驱动开发以及资源管理。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-comment">// Platform设备的注册/注销接口</span><br><span class="hljs-type">int</span> <span class="hljs-title function_">platform_device_register</span><span class="hljs-params">(<span class="hljs-keyword">struct</span> platform_device *pdev)</span>;<br><span class="hljs-type">void</span> <span class="hljs-title function_">platform_device_unregister</span><span class="hljs-params">(<span class="hljs-keyword">struct</span> platform_device *pdev)</span>;<br><br><span class="hljs-comment">// 批量注册多个Platform设备</span><br><span class="hljs-type">int</span> <span class="hljs-title function_">platform_add_devices</span><span class="hljs-params">(<span class="hljs-keyword">struct</span> platform_device **devs, <span class="hljs-type">int</span> num)</span>;<br><br><br><span class="hljs-comment">// 通过这些接口，可以获取platform_device变量中的resource信息，以及直接获取IRQ的number等等</span><br><span class="hljs-keyword">struct</span> resource *<span class="hljs-title function_">platform_get_resource</span><span class="hljs-params">(<span class="hljs-keyword">struct</span> platform_device *pdev,</span><br><span class="hljs-params">                                    <span class="hljs-type">unsigned</span> <span class="hljs-type">int</span> type, <span class="hljs-type">unsigned</span> <span class="hljs-type">int</span> num)</span>;<br><span class="hljs-type">int</span> <span class="hljs-title function_">platform_get_irq</span><span class="hljs-params">(<span class="hljs-keyword">struct</span> platform_device *pdev, <span class="hljs-type">unsigned</span> <span class="hljs-type">int</span> num)</span>;<br><span class="hljs-keyword">struct</span> resource *<span class="hljs-title function_">platform_get_resource_byname</span><span class="hljs-params">(<span class="hljs-keyword">struct</span> platform_device *pdev,</span><br><span class="hljs-params">                                           <span class="hljs-type">unsigned</span> <span class="hljs-type">int</span> type, <span class="hljs-type">const</span> <span class="hljs-type">char</span> *name)</span>;<br><span class="hljs-type">int</span> <span class="hljs-title function_">platform_get_irq_byname</span><span class="hljs-params">(<span class="hljs-keyword">struct</span> platform_device *pdev, <span class="hljs-type">const</span> <span class="hljs-type">char</span> *name)</span>;<br><br><br><span class="hljs-comment">// 其它形式的设备注册。调用者只需要提供一些必要的信息，如name、ID、resource等，Platform模块就会自动分配一个struct platform_device变量，填充内容后，注册到内核中。</span><br><span class="hljs-keyword">struct</span> platform_device *<span class="hljs-title function_">platform_device_register_full</span><span class="hljs-params">(</span><br><span class="hljs-params">    <span class="hljs-type">const</span> <span class="hljs-keyword">struct</span> platform_device_info *pdevinfo)</span>;<br><span class="hljs-type">static</span> <span class="hljs-keyword">inline</span> <span class="hljs-keyword">struct</span> platform_device *<span class="hljs-title function_">platform_device_register_resndata</span><span class="hljs-params">(</span><br><span class="hljs-params">    <span class="hljs-keyword">struct</span> device *parent, <span class="hljs-type">const</span> <span class="hljs-type">char</span> *name, <span class="hljs-type">int</span> id,</span><br><span class="hljs-params">    <span class="hljs-type">const</span> <span class="hljs-keyword">struct</span> resource *res, <span class="hljs-type">unsigned</span> <span class="hljs-type">int</span> num,</span><br><span class="hljs-params">    <span class="hljs-type">const</span> <span class="hljs-type">void</span> *data, <span class="hljs-type">size_t</span> size)</span>;<br><span class="hljs-type">static</span> <span class="hljs-keyword">inline</span> <span class="hljs-keyword">struct</span> platform_device *<span class="hljs-title function_">platform_device_register_simple</span><span class="hljs-params">(</span><br><span class="hljs-params">    <span class="hljs-type">const</span> <span class="hljs-type">char</span> *name, <span class="hljs-type">int</span> id,</span><br><span class="hljs-params">    <span class="hljs-type">const</span> <span class="hljs-keyword">struct</span> resource *res, <span class="hljs-type">unsigned</span> <span class="hljs-type">int</span> num)</span>;<br><span class="hljs-type">static</span> <span class="hljs-keyword">inline</span> <span class="hljs-keyword">struct</span> platform_device *<span class="hljs-title function_">platform_device_register_data</span><span class="hljs-params">(</span><br><span class="hljs-params">    <span class="hljs-keyword">struct</span> device *parent, <span class="hljs-type">const</span> <span class="hljs-type">char</span> *name, <span class="hljs-type">int</span> id,</span><br><span class="hljs-params">    <span class="hljs-type">const</span> <span class="hljs-type">void</span> *data, <span class="hljs-type">size_t</span> size)</span>;<br><br><span class="hljs-comment">// 以name和id为参数，动态分配一个struct platform_device变量</span><br><span class="hljs-keyword">struct</span> platform_device *<span class="hljs-title function_">platform_device_alloc</span><span class="hljs-params">(<span class="hljs-type">const</span> <span class="hljs-type">char</span> *name, <span class="hljs-type">int</span> id)</span>;<br><br><span class="hljs-comment">// 向platform device中增加资源描述</span><br><span class="hljs-type">int</span> <span class="hljs-title function_">platform_device_add_resources</span><span class="hljs-params">(<span class="hljs-keyword">struct</span> platform_device *pdev,</span><br><span class="hljs-params">                                <span class="hljs-type">const</span> <span class="hljs-keyword">struct</span> resource *res,</span><br><span class="hljs-params">                                <span class="hljs-type">unsigned</span> <span class="hljs-type">int</span> num)</span>;<br><span class="hljs-comment">// 向platform device中添加自定义的数据（保存在pdev-&gt;dev.platform_data指针中）</span><br><span class="hljs-type">int</span> <span class="hljs-title function_">platform_device_add_data</span><span class="hljs-params">(<span class="hljs-keyword">struct</span> platform_device *pdev,</span><br><span class="hljs-params">                           <span class="hljs-type">const</span> <span class="hljs-type">void</span> *data, <span class="hljs-type">size_t</span> size)</span>;<br><br><span class="hljs-comment">// 完成设备注册/从系统中移除设备</span><br><span class="hljs-type">int</span> <span class="hljs-title function_">platform_device_add</span><span class="hljs-params">(<span class="hljs-keyword">struct</span> platform_device *pdev)</span>;<br><span class="hljs-type">void</span> <span class="hljs-title function_">platform_device_del</span><span class="hljs-params">(<span class="hljs-keyword">struct</span> platform_device *pdev)</span>;<br><span class="hljs-comment">// 释放设备内存</span><br><span class="hljs-type">void</span> <span class="hljs-title function_">platform_device_put</span><span class="hljs-params">(<span class="hljs-keyword">struct</span> platform_device *pdev)</span>;<br></code></pre></td></tr></table></figure>
+
+
+
+<h3 id="Platform-Driver-API"><a href="#Platform-Driver-API" class="headerlink" title="Platform Driver API"></a>Platform Driver API</h3><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-comment">// platform driver的注册、注销接口</span><br><span class="hljs-type">int</span> <span class="hljs-title function_">platform_driver_register</span><span class="hljs-params">(<span class="hljs-keyword">struct</span> platform_driver *drv)</span>;<br><span class="hljs-type">void</span> <span class="hljs-title function_">platform_driver_unregister</span><span class="hljs-params">(<span class="hljs-keyword">struct</span> platform_driver *drv)</span>;<br><br><span class="hljs-comment">// 主动执行probe动作</span><br><span class="hljs-type">int</span> <span class="hljs-title function_">platform_driver_probe</span><span class="hljs-params">(<span class="hljs-keyword">struct</span> platform_driver *driver,</span><br><span class="hljs-params">                        <span class="hljs-type">int</span> (*probe)(<span class="hljs-keyword">struct</span> platform_device *))</span>;<br><br><span class="hljs-comment">// 设置或者获取driver保存在device变量中的私有数据</span><br><span class="hljs-type">static</span> <span class="hljs-keyword">inline</span> <span class="hljs-type">void</span> *<span class="hljs-title function_">platform_get_drvdata</span><span class="hljs-params">(<span class="hljs-type">const</span> <span class="hljs-keyword">struct</span> platform_device *pdev)</span>;<br><span class="hljs-type">static</span> <span class="hljs-keyword">inline</span> <span class="hljs-type">void</span> <span class="hljs-title function_">platform_set_drvdata</span><span class="hljs-params">(<span class="hljs-keyword">struct</span> platform_device *pdev, <span class="hljs-type">void</span> *data)</span>;<br></code></pre></td></tr></table></figure>
+
+
+
+<h3 id="Platform-device-工作机制"><a href="#Platform-device-工作机制" class="headerlink" title="Platform device 工作机制"></a>Platform device 工作机制</h3><pre><code class=" mermaid">sequenceDiagram
+    开发者/固件-&gt;&gt;内核: 定义设备信息(设备树/ACPI/板文件)
+    内核-&gt;&gt;平台核心: platform_device_register()
+    平台核心-&gt;&gt;设备模型: 创建设备并添加到平台总线
+    驱动-&gt;&gt;平台核心: platform_driver_register()
+    平台核心-&gt;&gt;驱动: 调用probe()匹配设备
+</code></pre>
+
+
+
+<h2 id="Device-Resource-Management"><a href="#Device-Resource-Management" class="headerlink" title="Device Resource Management"></a>Device Resource Management</h2><p>设备资源管理是 Linux 内核中一种自动化的资源管理机制，它确保当设备被卸载或移除时，与其关联的资源会被自动释放，从而避免资源泄漏。</p>
+<p>设备资源管理(简称 devres)的核心思想是：</p>
+<ul>
+<li><strong>资源与设备绑定</strong>：将资源分配与特定设备关联</li>
+<li><strong>自动释放</strong>：当设备注销或驱动卸载时自动释放资源</li>
+<li><strong>统一接口</strong>：提供标准化的资源管理API</li>
+</ul>
+<h3 id="核心API"><a href="#核心API" class="headerlink" title="核心API"></a>核心API</h3><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-comment">// 内存管理</span><br><span class="hljs-type">void</span> *<span class="hljs-title function_">devm_kzalloc</span><span class="hljs-params">(<span class="hljs-keyword">struct</span> device *dev, <span class="hljs-type">size_t</span> size, <span class="hljs-type">gfp_t</span> gfp)</span>;<br><span class="hljs-type">void</span> <span class="hljs-title function_">devm_kfree</span><span class="hljs-params">(<span class="hljs-keyword">struct</span> device *dev, <span class="hljs-type">void</span> *p)</span>;<br><br><span class="hljs-comment">//  I/O 内存映射</span><br><span class="hljs-type">void</span> __iomem *<span class="hljs-title function_">devm_ioremap_resource</span><span class="hljs-params">(<span class="hljs-keyword">struct</span> device *dev, </span><br><span class="hljs-params">                                   <span class="hljs-keyword">struct</span> resource *res)</span>;<br><br><span class="hljs-comment">// 中断管理</span><br><span class="hljs-type">int</span> <span class="hljs-title function_">devm_request_irq</span><span class="hljs-params">(<span class="hljs-keyword">struct</span> device *dev, <span class="hljs-type">unsigned</span> <span class="hljs-type">int</span> irq,</span><br><span class="hljs-params">                    <span class="hljs-type">irq_handler_t</span> handler, <span class="hljs-type">unsigned</span> <span class="hljs-type">long</span> irqflags,</span><br><span class="hljs-params">                    <span class="hljs-type">const</span> <span class="hljs-type">char</span> *devname, <span class="hljs-type">void</span> *dev_id)</span>;<br><br><span class="hljs-comment">// 设备特定资源</span><br><span class="hljs-keyword">struct</span> clk *<span class="hljs-title function_">devm_clk_get</span><span class="hljs-params">(<span class="hljs-keyword">struct</span> device *dev, <span class="hljs-type">const</span> <span class="hljs-type">char</span> *id)</span>;<br><span class="hljs-type">int</span> <span class="hljs-title function_">devm_gpio_request</span><span class="hljs-params">(<span class="hljs-keyword">struct</span> device *dev, <span class="hljs-type">unsigned</span> gpio,</span><br><span class="hljs-params">                     <span class="hljs-type">const</span> <span class="hljs-type">char</span> *label)</span>;<br></code></pre></td></tr></table></figure>
+
+
+
+<h3 id="使用示例"><a href="#使用示例" class="headerlink" title="使用示例"></a>使用示例</h3><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-type">static</span> <span class="hljs-type">int</span> <span class="hljs-title function_">my_probe</span><span class="hljs-params">(<span class="hljs-keyword">struct</span> platform_device *pdev)</span><br>&#123;<br>    <span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">my_data</span> *<span class="hljs-title">data</span>;</span><br>    <span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">resource</span> *<span class="hljs-title">res</span>;</span><br>    <span class="hljs-type">void</span> __iomem *regs;<br>    <span class="hljs-type">int</span> irq;<br>    <br>    <span class="hljs-comment">// 自动释放的内存分配</span><br>    data = devm_kzalloc(&amp;pdev-&gt;dev, <span class="hljs-keyword">sizeof</span>(*data), GFP_KERNEL);<br>    <span class="hljs-keyword">if</span> (!data)<br>        <span class="hljs-keyword">return</span> -ENOMEM;<br>    <br>    <span class="hljs-comment">// 获取并映射IO内存(自动释放)</span><br>    res = platform_get_resource(pdev, IORESOURCE_MEM, <span class="hljs-number">0</span>);<br>    regs = devm_ioremap_resource(&amp;pdev-&gt;dev, res);<br>    <span class="hljs-keyword">if</span> (IS_ERR(regs))<br>        <span class="hljs-keyword">return</span> PTR_ERR(regs);<br>    <br>    <span class="hljs-comment">// 申请中断(自动释放)</span><br>    irq = platform_get_irq(pdev, <span class="hljs-number">0</span>);<br>    <span class="hljs-keyword">if</span> (irq &lt; <span class="hljs-number">0</span>)<br>        <span class="hljs-keyword">return</span> irq;<br>    <br>    ret = devm_request_irq(&amp;pdev-&gt;dev, irq, my_interrupt,<br>                          <span class="hljs-number">0</span>, dev_name(&amp;pdev-&gt;dev), data);<br>    <span class="hljs-keyword">if</span> (ret)<br>        <span class="hljs-keyword">return</span> ret;<br>    <br>    <span class="hljs-comment">// 无需单独的remove函数!</span><br>    <span class="hljs-keyword">return</span> <span class="hljs-number">0</span>;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>这种方式与传统的管理方式最大的区别在于——不需要remove函数!</p>
+<h2 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h2><ul>
+<li><a target="_blank" rel="noopener" href="http://www.wowotech.net/sort/device_model">http://www.wowotech.net/sort/device_model</a></li>
+<li><a target="_blank" rel="noopener" href="https://linux-kernel-labs-zh.xyz/labs/device_model.html">https://linux-kernel-labs-zh.xyz/labs/device_model.html</a></li>
+<li><a target="_blank" rel="noopener" href="https://doc.embedfire.com/linux/rk356x/driver/zh/latest/linux_driver/base_linux_device_model.html">https://doc.embedfire.com/linux/rk356x/driver/zh/latest/linux_driver/base_linux_device_model.html</a></li>
+</ul>
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div></div>
+      <div>https://hehichens.github.io/2025/07/20/Linux设备模型/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>Hichens</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2025年7月20日</div>
+        </div>
+      
+      
+      
+        <div class="license-meta-item">
+          <div>许可协议</div>
+          <div>
+            
+              
+              
+                <a class="print-no-link" target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                    <i class="iconfont icon-cc-by"></i>
+                  </span>
+                </a>
+              
+            
+          </div>
+        </div>
+      
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2025/07/18/About-me/" title="About me">
+                        <span class="hidden-mobile">About me</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header">
+    <i class="iconfont icon-list"></i>
+    <span>目录</span>
+  </p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+    </div>
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.4/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.20.1/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.11/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/5.0.0/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>
